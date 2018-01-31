@@ -16,10 +16,8 @@
 package com.example.exoplayer;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -39,7 +37,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -47,9 +45,9 @@ import com.google.android.exoplayer2.util.Util;
 /**
  * A fullscreen activity to play audio or video streams.
  */
-public class PlayerActivity extends AppCompatActivity {
+public class PlayerActivity extends AppCompatActivity implements PlaybackControlView.VisibilityListener {
 
-  private SimpleExoPlayerView playerView;
+  private PlaybackControlView playerView;
   private SimpleExoPlayer player;
   private DonutProgress progress;
   private View exoShutter;
@@ -62,10 +60,8 @@ public class PlayerActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_player);
-    playerView = findViewById(R.id.video_view);
-    progress = findViewById(R.id.donut_progress);
-    progress.setTextColor(Color.TRANSPARENT);
-    exoShutter = findViewById(R.id.exo_shutter);
+    playerView = findViewById(R.id.playback_view);
+
 
   }
 
@@ -75,9 +71,10 @@ public class PlayerActivity extends AppCompatActivity {
             new DefaultTrackSelector(), new DefaultLoadControl());
 
     playerView.setPlayer(player);
+    playerView.setVisibility(View.VISIBLE);
     player.setPlayWhenReady(playWhenReady);
     player.seekTo(currentWindow, playbackPosition);
-    playerView.setControllerShowTimeoutMs(0);
+//    playerView.setControllerShowTimeoutMs(0);
 //    playerView.setShutterBackgroundColor(Color.RED);
     Uri uri = Uri.parse(getString(R.string.media_url_mp3));
     MediaSource mediaSource = buildMediaSource(uri);
@@ -105,17 +102,17 @@ public class PlayerActivity extends AppCompatActivity {
           long realDurationMillis = player.getDuration();
           durationSet = true;
         }
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            Log.d("h2", player.getCurrentPosition()+"");
-            progress.setProgress(player.getCurrentPosition());
-            handler.postDelayed(this, 500);
-          }
-        }, 500);
-        Log.d("h2 - Duration", player.getDuration()+"");
-        progress.setMax((int)player.getDuration());
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//          @Override
+//          public void run() {
+//            Log.d("h2", player.getCurrentPosition()+"");
+////            progress.setProgress(player.getCurrentPosition());
+//            handler.postDelayed(this, 500);
+//          }
+//        }, 500);
+//        Log.d("h2 - Duration", player.getDuration()+"");
+//        progress.setMax((int)player.getDuration());
       }
 
       @Override
@@ -207,4 +204,8 @@ public class PlayerActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public void onVisibilityChange(int visibility) {
+        Log.d("h2", visibility+"");
+  }
 }
